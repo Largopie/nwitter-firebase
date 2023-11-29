@@ -2,7 +2,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { auth } from '../firebase';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FirebaseError } from 'firebase/app';
 
 const Wrapper = styled.div`
@@ -45,6 +45,13 @@ const Error = styled.span`
   font-weight: 600;
   color: tomato;
 `;
+
+const Switcher = styled.span`
+  margin-top: 20px;
+  a {
+    color: #1d9bf0;
+  }
+`
 
 export default function Login() {
   const navigate = useNavigate();
@@ -92,6 +99,9 @@ export default function Login() {
         <Input type='submit' value={isLoading ? 'Loading...' : 'Log in'} />
       </Form>
       {error !== '' ? <Error>{error}</Error> : null}
+      <Switcher>
+        Don't have an account? <Link to='/create-account'>Create Account &rarr;</Link>
+      </Switcher>
     </Wrapper>
   );
 }

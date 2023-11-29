@@ -2,7 +2,7 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { auth } from '../firebase';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FirebaseError } from 'firebase/app';
 
 const Wrapper = styled.div`
@@ -45,6 +45,13 @@ const Error = styled.span`
   font-weight: 600;
   color: tomato;
 `;
+
+const Switcher = styled.span`
+  margin-top: 20px;
+  a {
+    color: #1d9bf0;
+  }
+`
 
 export default function CreateAccount() {
   const navigate = useNavigate();
@@ -99,6 +106,9 @@ export default function CreateAccount() {
         <Input type='submit' value={isLoading ? 'Loading...' : 'Create Account'} />
       </Form>
       {error !== '' ? <Error>{error}</Error> : null}
+      <Switcher>
+        Already have an account? <Link to='/login'>Login &rarr;</Link>
+      </Switcher>
     </Wrapper>
   );
 }
