@@ -74,6 +74,12 @@ export default function PostTweetForm() {
     const { files } = e.target;
 
     if (files && files.length === 1) {
+      const MAX_SIZE = 1024 * 1024;
+      if(MAX_SIZE < files[0].size) {
+        alert('The file must be no more than 1MB!');
+        return;
+      }
+
       setFile(files[0]);
     }
   };
