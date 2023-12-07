@@ -58,7 +58,7 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
     } catch (error) {
       console.log(error);
     } finally {
-      // loading 구현?
+      // TODO: loading 구현?
     }
   }
   return (
@@ -67,6 +67,8 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
         <Username>{username}</Username>
         <Payload>{tweet}</Payload>
         {user?.uid === userId ? <DeleteButton onClick={onDelete}>Delete</DeleteButton> : null}
+        {/* TODO: Edit 버튼 만들기 */}
+        {/* TODO: 사진 Edit 버튼 만들기 */}
       </Column>
       <Column>{photo ? <Photo src={photo} /> : null}</Column>
     </Wrapper>
