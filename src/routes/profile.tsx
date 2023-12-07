@@ -1,8 +1,11 @@
 import { styled } from 'styled-components';
-import { auth, storage } from '../firebase';
-import { useState } from 'react';
+import { auth, db, storage } from '../firebase';
+import { useEffect, useState } from 'react';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
+import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import { ITweet } from '../components/timeline';
+import Tweet from '../components/tweet';
 
 const Wrapper = styled.div`
   display: flex;
@@ -33,16 +36,26 @@ const AvatarImg = styled.img`
 const AvatarInput = styled.input`
   display: none;
 `;
+
 const Name = styled.span`
   font-size: 22px;
 `;
 
+const Tweets = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+`
+
 export default function Profile() {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
+  const [tweets, setTweets] = useState<ITweet[]>([]);
+
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
-    
+
     if (!user) return;
 
     if (files && files.length === 1) {
@@ -50,13 +63,28 @@ export default function Profile() {
       const locationRef = ref(storage, `avatars/${user?.uid}`);
       const result = await uploadBytes(locationRef, file);
       const avatarUrl = await getDownloadURL(result.ref);
-      
+
       setAvatar(avatarUrl);
       await updateProfile(user, {
         photoURL: avatarUrl,
       });
     }
   };
+
+  const fetchTweets = async () => {
+    const tweetQuery = query(collection(db, 'tweets'), where('userId', '==', user?.uid), orderBy('createdAt', 'desc'), limit(25));
+    const snapshot = await getDocs(tweetQuery);
+    const tweets = snapshot.docs.map((doc) => {
+      const { photo, tweet, userId, username, createdAt } = doc.data();
+      return { tweet, createdAt, userId, username, photo, id: doc.id };
+    });
+
+    setTweets(tweets);
+  };
+
+  useEffect(() => {
+    fetchTweets();
+  }, []);
 
   return (
     <Wrapper>
@@ -71,6 +99,10 @@ export default function Profile() {
       </AvatarUpload>
       <AvatarInput onChange={onAvatarChange} id='avatar' type='file' accept='image/*' />
       <Name>{user?.displayName ?? 'Anonymous'}</Name>
+      {/* TODO: 닉네임 수정 기능 구현 => 버튼을 만들어서 프로필에서 닉네임을 바꿀 수 있도록 구현 */}
+      <Tweets>
+          {tweets.map(tweet => <Tweet key={tweet.id} {...tweet} />)}
+      </Tweets>
     </Wrapper>
   );
 }
