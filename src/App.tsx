@@ -51,6 +51,9 @@ const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
   }
   body {
+    ::-webkit-scrollbar {
+      display: none;
+    }
     background-color: black;
     color: white;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
